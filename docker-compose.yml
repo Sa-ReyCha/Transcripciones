@@ -1,0 +1,22 @@
+services:
+  # Cloudflare Tunnel — expone la app Python (que corre nativa en el Mac) al público con HTTPS.
+  # La app Python NO corre en Docker porque mlx-whisper requiere Apple Silicon nativo.
+  # Levantar primero la app: .env_santi/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    extra_hosts:
+      # Permite al contenedor llegar al host del Mac
+      - "host.docker.internal:host-gateway"
+
+  # Perfil alternativo: túnel temporal sin cuenta (solo para pruebas)
+  cloudflared-quick:
+    image: cloudflare/cloudflared:latest
+    profiles: ["quick-tunnel"]
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://host.docker.internal:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+mlx-whisper
+pyannote.audio>=4.0
+httpx
